@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<title>Selamat Ulang Tahun 🎉</title>
+
+<style>
+body {
+  margin: 0;
+  background: black;
+  font-family: Arial;
+  color: white;
+  overflow: hidden;
+}
+
+/* CANVAS BACKGROUND */
+#canvas {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 0; /* di belakang */
+}
+
+/* KONTEN DI ATAS */
+.content {
+  position: relative;
+  z-index: 2;
+}
+
+/* Judul */
+h1 {
+  text-align: center;
+  margin-top: 30px;
+  font-size: 40px;
+  animation: glow 2s infinite alternate;
+}
+
+h2 {
+  text-align: center;
+  font-size: 25px;
+  color: pink;
+  margin-bottom: 20px;
+}
+
+/* Container */
+.container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 60px;
+  padding: 20px;
+}
+
+/* FOTO */
+.foto {
+  width: 160px;
+  border-radius: 20px;
+  box-shadow: 0 0 15px pink;
+  filter: blur(10px);
+  opacity: 0;
+  animation: muncul 3s forwards;
+  animation-delay: 1s;
+}
+
+/* TEXT */
+#text {
+  width: 400px;
+  font-size: 15px;
+  line-height: 1.6;
+  color: #ddd;
+  white-space: pre-line;
+  border-right: 2px solid white;
+}
+
+/* Tombol */
+button {
+  display: block;
+  margin: 20px auto;
+  padding: 12px 25px;
+  font-size: 16px;
+  border-radius: 10px;
+  border: none;
+  background: pink;
+  cursor: pointer;
+}
+
+/* Animasi */
+@keyframes muncul {
+  to {
+    opacity: 1;
+    filter: blur(0);
+  }
+}
+
+@keyframes glow {
+  from { text-shadow: 0 0 10px #fff; }
+  to { text-shadow: 0 0 30px #ff0; }
+}
+
+/* efek lain tetap */
+.star {
+  position: absolute;
+  width: 2px;
+  height: 100px;
+  background: linear-gradient(white, transparent);
+  animation: jatuh 2s linear infinite;
+  z-index: 1;
+}
+
+@keyframes jatuh {
+  from { transform: translateY(-100px); opacity: 1; }
+  to { transform: translateY(800px) translateX(200px); opacity: 0; }
+}
+
+.heart {
+  position: absolute;
+  font-size: 20px;
+  color: pink;
+  animation: naik 3s forwards;
+  z-index: 2;
+}
+
+@keyframes naik {
+  to { transform: translateY(-200px); opacity: 0; }
+}
+</style>
+</head>
+
+<body>
+
+<!-- BACKGROUND FIREWORK -->
+<canvas id="canvas"></canvas>
+
+<!-- KONTEN -->
+<div class="content">
+  <h1>🎂 Selamat Ulang Tahun 🎉</h1>
+  <h2>Untuk Alfitri Yani 💖</h2>
+
+  <div class="container">
+    <img src="yani.jpeg" class="foto" id="foto">
+    <div id="text"></div>
+  </div>
+
+  <button id="startBtn" onclick="startParty()">Mulai 🎊</button>
+</div>
+
+<audio id="music" loop>
+  <source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3">
+</audio>
+
+<script>
+const textContent = `Untuk, Alfitri Yani 💖
+
+Selamat ulang tahun yani jelek 22 Tahun...
+Terima kasih sudah selalu ada buat keluarga, menjadi kakak yang sabar, kuat, dan hebat.
+jujur terimakasih udah jadi kakak yang baik selama desi hidup, selalu sehat dan jadi kaya raya ya yanii.
+maaf desi belum berguna buat yani, terimakasih juga udah sayang sama mama bapak, yani jangan tinggalin salat ya.
+Semoga semua impianmu tercapai, selalu sehat, bahagia, dan dilindungi sama Allah SWT..
+Aku akan selalu ada untukmu seperti kamu ada untukku.
+Selamat ulang tahun kakakku satu-satunya 🎂💖
+
+Dari: nurdesi 🤍`;
+
+let i = 0;
+function typeWriter() {
+  if (i < textContent.length) {
+    document.getElementById("text").innerHTML += textContent.charAt(i);
+    i++;
+    setTimeout(typeWriter, 40);
+  }
+}
+
+/* Canvas */
+const canvas = document.getElementById("canvas");
+const ctx = canvas.getContext("2d");
+
+function resizeCanvas(){
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+}
+resizeCanvas();
+window.onresize = resizeCanvas;
+
+let fireworks = [];
+
+function createFirework() {
+  let x = Math.random() * canvas.width;
+  let y = Math.random() * canvas.height / 2;
+
+  for (let i = 0; i < 50; i++) {
+    fireworks.push({
+      x, y,
+      dx: (Math.random()-0.5)*6,
+      dy: (Math.random()-0.5)*6,
+      life: 100
+    });
+  }
+}
+
+function drawFireworks() {
+  ctx.fillStyle = "rgba(0,0,0,0.2)";
+  ctx.fillRect(0,0,canvas.width,canvas.height);
+
+  fireworks.forEach((f,i)=>{
+    ctx.beginPath();
+    ctx.arc(f.x,f.y,2,0,Math.PI*2);
+    ctx.fillStyle = "hsl("+Math.random()*360+",100%,50%)";
+    ctx.fill();
+
+    f.x+=f.dx;
+    f.y+=f.dy;
+    f.life--;
+
+    if(f.life<=0) fireworks.splice(i,1);
+  });
+
+  requestAnimationFrame(drawFireworks);
+}
+
+/* efek */
+function createStar() {
+  let s = document.createElement("div");
+  s.className="star";
+  s.style.left=Math.random()*window.innerWidth+"px";
+  document.body.appendChild(s);
+  setTimeout(()=>s.remove(),2000);
+}
+
+function createHeart() {
+  let h = document.createElement("div");
+  h.className="heart";
+  h.innerHTML="💖";
+
+  let rect = document.getElementById("foto").getBoundingClientRect();
+  h.style.left = rect.left + rect.width/2 + "px";
+  h.style.top = rect.top + "px";
+
+  document.body.appendChild(h);
+  setTimeout(()=>h.remove(),3000);
+}
+
+/* Start */
+function startParty() {
+  document.getElementById("music").play();
+  typeWriter();
+
+  document.getElementById("startBtn").style.display = "none";
+
+  setInterval(createFirework,800);
+  setInterval(createStar,300);
+  setInterval(createHeart,500);
+
+  drawFireworks();
+}
+</script>
+
+</body>
+</html>
